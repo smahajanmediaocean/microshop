@@ -1,0 +1,60 @@
+<app-header [cartCount]="(cartCount$ | async) || 0"></app-header>
+
+<main class="home">
+  <section class="home__hero">
+    <div class="home__hero-content">
+      <h1>Discover Amazing Products</h1>
+      <p>Shop the latest trends at unbeatable prices</p>
+    </div>
+  </section>
+
+  <section class="home__products">
+    <div class="home__products-header">
+      <h2>Featured Products</h2>
+      <span *ngIf="filteredProducts$ | async as products" class="home__count">
+        {{ products.length }} items
+      </span>
+      <div class="home__search">
+        <span class="home__search-icon">🔍</span>
+        <input
+          class="home__search-input"
+          type="text"
+          placeholder="Search products..."
+          (input)="onInputChange($event)"/>
+      </div>
+    </div>
+
+    <div class="home__chips">
+      <button
+        class="home__chip"
+        [class.home__chip--active]="selectedCategory === 'All'"
+        (click)="onCategorySelect('All')">
+        All
+      </button>
+      <button
+        *ngFor="let category of productCategory$ | async"
+        class="home__chip"
+        [class.home__chip--active]="selectedCategory === category"
+        (click)="onCategorySelect(category)">
+        {{ category | titlecase }}
+      </button>
+    </div>
+
+    <div *ngIf="filteredProducts$ | async as products; else loading" class="product-grid">
+      <app-product-card
+        *ngFor="let product of products"
+        [product]="product"
+        (addToCart)="onAddToCart($event)">
+      </app-product-card>
+    </div>
+
+    <ng-template #loading>
+      <div class="home__loading">
+        <div class="home__spinner"></div>
+        <p>Loading products...</p>
+      </div>
+    </ng-template>
+  </section>
+</main>
+
+<app-footer></app-footer>

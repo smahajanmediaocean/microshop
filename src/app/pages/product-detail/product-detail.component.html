@@ -1,0 +1,58 @@
+<app-header [cartCount]="(cartCount$ | async) || 0"></app-header>
+
+<main class="detail-page">
+  <ng-container *ngIf="product$ | async as product; else loading">
+    <div class="detail-page__inner">
+
+      <a routerLink="/home" class="detail-page__back">← Back to Products</a>
+
+      <div class="detail-layout">
+
+        <!-- Image panel -->
+        <div class="detail-image">
+          <img [src]="product.image" [alt]="product.title" />
+        </div>
+
+        <!-- Info panel -->
+        <div class="detail-info">
+          <p class="detail-info__category">{{ product.category | titlecase }}</p>
+          <h1 class="detail-info__title">{{ product.title }}</h1>
+
+          <div class="detail-info__rating">
+            <span class="detail-info__stars">⭐ {{ product.rating.rate }}</span>
+            <span class="detail-info__count">({{ product.rating.count }} reviews)</span>
+          </div>
+
+          <div class="detail-info__price-row">
+            <span class="detail-info__price">{{ product.price | currency:'INR':'symbol':'1.0-0' }}</span>
+            <s *ngIf="product.originalPrice" class="detail-info__original">
+              {{ product.originalPrice | currency:'INR':'symbol':'1.0-0' }}
+            </s>
+            <span *ngIf="product.originalPrice" class="detail-info__badge">
+              {{ product.originalPrice | discount:product.price }}
+            </span>
+          </div>
+
+          <div class="detail-info__divider"></div>
+
+          <p class="detail-info__description">{{ product.description }}</p>
+
+          <button class="detail-info__btn" (click)="addToCart(product)">
+            🛒 Add to Cart
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #loading>
+    <div class="detail-loading">
+      <div class="detail-spinner"></div>
+      <p>Loading product...</p>
+    </div>
+  </ng-template>
+</main>
+
+<app-footer></app-footer>
+

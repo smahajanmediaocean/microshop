@@ -1,0 +1,16 @@
+<nav class="navbar">
+  <a routerLink="/home" class="navbar__logo">
+    🛒 <span>MicroShop</span>
+  </a>
+
+  <div class="navbar__links">
+    <a routerLink="/home"     routerLinkActive="active">Home</a>
+    <a routerLink="/products" routerLinkActive="active">Products</a>
+    <a routerLink="/orders"   routerLinkActive="active">Orders</a>
+  </div>
+
+  <a routerLink="/cart" class="navbar__cart">
+    <span class="navbar__cart-icon">🛒</span>
+    <span class="navbar__cart-badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
+  </a>
+</nav>

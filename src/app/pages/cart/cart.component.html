@@ -1,0 +1,75 @@
+<app-header [cartCount]="(cartService.cartCount$ | async) || 0"></app-header>
+
+<main class="cart-page">
+  <div class="cart-page__inner">
+
+    <h1 class="cart-page__title">Your Cart</h1>
+
+    <ng-container *ngIf="cartItems$ | async as items">
+
+      <!-- Empty state -->
+      <div *ngIf="items.length === 0" class="cart-empty">
+        <span class="cart-empty__icon">🛒</span>
+        <h2>Your cart is empty</h2>
+        <p>Looks like you haven't added anything yet.</p>
+        <a routerLink="/home" class="cart-empty__btn">Start Shopping</a>
+      </div>
+
+      <!-- Cart items -->
+      <div *ngIf="items.length > 0" class="cart-layout">
+        <div class="cart-items">
+          <div *ngFor="let item of items" class="cart-item">
+            <img [src]="item.product.image" [alt]="item.product.title" class="cart-item__img" />
+
+            <div class="cart-item__info">
+              <p class="cart-item__category">{{ item.product.category | titlecase }}</p>
+              <h3 class="cart-item__name">{{ item.product.title }}</h3>
+              <p class="cart-item__price">{{ item.product.price | currency:'INR':'symbol':'1.0-0' }}</p>
+            </div>
+
+            <div class="cart-item__controls">
+              <input
+                type="number"
+                [value]="item.quantity"
+                min="1"
+                class="cart-item__qty"
+                (change)="updateQty(item.product.id, $event)" />
+              <span class="cart-item__subtotal">
+                {{ item.product.price * item.quantity | currency:'INR':'symbol':'1.0-0' }}
+              </span>
+              <button class="cart-item__remove" (click)="remove(item.product.id)">🗑</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order summary -->
+        <div class="cart-summary">
+          <h2 class="cart-summary__title">Order Summary</h2>
+
+          <div class="cart-summary__row">
+            <span>Subtotal ({{ items.length }} items)</span>
+            <span>{{ cartService.getTotal() | currency:'INR':'symbol':'1.0-0' }}</span>
+          </div>
+          <div class="cart-summary__row">
+            <span>Shipping</span>
+            <span class="cart-summary__free">FREE</span>
+          </div>
+          <div class="cart-summary__divider"></div>
+          <div class="cart-summary__row cart-summary__row--total">
+            <span>Total</span>
+            <span>{{ cartService.getTotal() | currency:'INR':'symbol':'1.0-0' }}</span>
+          </div>
+
+          <button class="cart-summary__checkout" routerLink="/checkout">
+            Proceed to Checkout
+          </button>
+          <a routerLink="/home" class="cart-summary__continue">← Continue Shopping</a>
+        </div>
+      </div>
+
+    </ng-container>
+  </div>
+</main>
+
+<app-footer></app-footer>
+
