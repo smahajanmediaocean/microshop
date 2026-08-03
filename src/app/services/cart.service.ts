@@ -60,4 +60,8 @@ export class CartService {
   clearCart(): void {
     this.items$.next([]);
   }
+
+  getItems(): CartItem[] {
+    return this.items$.getValue();
+  }
 }

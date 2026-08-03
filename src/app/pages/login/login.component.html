@@ -1,0 +1,43 @@
+<!-- login.component.html — FormsModule must be imported in the module -->
+<form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+
+  <div class="field">
+    <label>Email</label>
+    <input
+      id="email"
+      name="email"
+      type="email"
+      [(ngModel)]="user.email"
+      required
+      email
+      #emailInput="ngModel"
+    />
+    <!-- Show errors only after field is touched -->
+    <div *ngIf="emailInput.invalid && emailInput.touched" class="error">
+      <span *ngIf="emailInput.errors?.['required']">Email is required</span>
+      <span *ngIf="emailInput.errors?.['email']">Enter a valid email</span>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Password</label>
+    <input
+      name="password"
+      type="password"
+      [(ngModel)]="user.password"
+      required
+      minlength="8"
+      #passwordInput="ngModel"
+    />
+    <div *ngIf="passwordInput.invalid && passwordInput.touched" class="error">
+      <span *ngIf="passwordInput.errors?.['required']">Password is required</span>
+      <span *ngIf="passwordInput.errors?.['minlength']">Minimum 8 characters</span>
+    </div>
+  </div>
+
+  <div *ngIf="loginForm.errors?.['loginFailed']" class="error">
+    Invalid email or password
+  </div>
+
+  <button type="submit" [disabled]="loginForm.invalid">Login</button>
+</form>
