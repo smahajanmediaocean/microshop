@@ -10,7 +10,11 @@ import { NgForm } from '@angular/forms';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-  user = { email: '', password: '' };  // bound to [(ngModel)] in template
+  // Sample FakeStore credentials for testing:
+  // username: mor_2314   password: 83r5^_
+  // username: johnd       password: m38rmF$
+  // username: kevinryan   password: kev02937@
+  user = { username: '', password: '' };
 
   constructor(
     private route: ActivatedRoute,
@@ -20,12 +24,12 @@ export class LoginComponent {
 
   onSubmit(form: NgForm): void {
     if (form.valid) {
-      this.authService.login(this.user.email, this.user.password).subscribe({
+      this.authService.login(this.user.username, this.user.password).subscribe({
         next: () => {
           const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
           this.router.navigate([returnUrl]);
         },
-        error: () => form.control.setErrors({ loginFailed: true })  // NgForm uses .control.setErrors()
+        error: () => form.control.setErrors({ loginFailed: true })
       });
     }
   }

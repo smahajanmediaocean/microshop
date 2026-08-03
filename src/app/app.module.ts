@@ -1,6 +1,6 @@
 import { NgModule, InjectionToken } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -15,7 +15,10 @@ import { ProductDetailComponent } from './pages/product-detail/product-detail.co
 import { environment } from '../environments/environment';
 import { API_URL } from './tokens/api-url.token';
 import { LoginComponent } from './pages/login/login.component';
+import { CheckoutModule } from './pages/checkout/checkout.module';
 import { FormsModule } from '@angular/forms';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { LoadingInterceptor } from './interceptors/loading.interceptor';
 
 
 @NgModule({
@@ -29,45 +32,19 @@ import { FormsModule } from '@angular/forms';
     DiscountPipe,
     CartComponent,
     ProductDetailComponent,
-    LoginComponent,
-    // CheckoutComponent removed — declared inside CheckoutModule (lazy-loaded)
+    LoginComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    CheckoutModule
   ],
   providers: [
-    { provide: API_URL, useValue: environment.apiUrl }
-  ],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
-
-
-@NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    HeaderComponent,
-    FooterComponent,
-    ProductCardComponent,
-    CardComponent,
-    DiscountPipe,
-    CartComponent,
-    ProductDetailComponent,
-    LoginComponent,
-    CheckoutComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    FormsModule
-  ],
-  providers: [
-    { provide: API_URL, useValue: environment.apiUrl }
+    { provide: API_URL, useValue: environment.apiUrl },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor,    multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

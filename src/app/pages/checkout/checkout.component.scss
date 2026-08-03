@@ -1,0 +1,175 @@
+.checkout-page {
+  min-height: calc(100vh - 64px);
+  background: var(--bg);
+  padding: 2.5rem 1rem 4rem;
+}
+
+.checkout-inner {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.checkout-header {
+  margin-bottom: 2rem;
+
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+  }
+}
+
+.checkout-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* ── Card sections ───────────────────────────────────────────────────────── */
+.form-section {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 1.75rem;
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+
+    &--full { grid-column: 1 / -1; }
+  }
+}
+
+/* ── Fields ──────────────────────────────────────────────────────────────── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  input[type='text'],
+  input[type='email'],
+  input[type='tel'] {
+    width: 100%;
+    padding: 0.65rem 0.875rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--bg);
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &::placeholder { color: var(--text-muted); }
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+    }
+
+    &.ng-invalid.ng-touched {
+      border-color: #ef4444;
+      &:focus { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15); }
+    }
+  }
+
+  &__error {
+    font-size: 0.78rem;
+    color: #ef4444;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+}
+
+/* ── Payment radio group ─────────────────────────────────────────────────── */
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+
+  .payment-option {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    font-size: 0.9rem;
+    font-weight: 500;
+
+    input[type='radio'] {
+      accent-color: var(--accent);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    &:has(input:checked) {
+      border-color: var(--accent);
+      background: rgba(249, 115, 22, 0.05);
+    }
+
+    &:hover { border-color: var(--accent); }
+  }
+}
+
+/* ── Form-level error ────────────────────────────────────────────────────── */
+.form-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-sm);
+  color: #dc2626;
+  font-size: 0.85rem;
+  padding: 0.65rem 0.875rem;
+}
+
+/* ── Submit button ───────────────────────────────────────────────────────── */
+.btn-submit {
+  width: 100%;
+  padding: 0.9rem;
+  background: var(--accent);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s, opacity 0.2s;
+
+  &:hover:not(:disabled) { background: var(--accent-hover); }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 540px) {
+  .form-section .field-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,1 +1,117 @@
-<p>checkout works!</p>
+<!-- checkout.component.html — ReactiveFormsModule must be imported -->
+<div class="checkout-page">
+  <div class="checkout-inner">
+
+    <div class="checkout-header">
+      <h1>Checkout</h1>
+      <p>Complete your order details below</p>
+    </div>
+
+    <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()" class="checkout-form">
+
+      <!-- Personal Details -->
+      <div class="form-section">
+        <h2 class="form-section__title">Personal Details</h2>
+        <div class="field-grid">
+
+          <div class="field">
+            <label>First Name</label>
+            <input type="text" formControlName="firstName" placeholder="John" />
+            <div *ngIf="checkoutForm.get('firstName')?.invalid
+                        && checkoutForm.get('firstName')?.touched" class="field__error">
+              <span *ngIf="checkoutForm.get('firstName')?.errors?.['required']">Required</span>
+              <span *ngIf="checkoutForm.get('firstName')?.errors?.['minlength']">Min 2 characters</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Last Name</label>
+            <input type="text" formControlName="lastName" placeholder="Doe" />
+            <div *ngIf="checkoutForm.get('lastName')?.invalid
+                        && checkoutForm.get('lastName')?.touched" class="field__error">
+              <span *ngIf="checkoutForm.get('lastName')?.errors?.['required']">Required</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Email</label>
+            <input type="email" formControlName="email" placeholder="you@example.com" />
+            <div *ngIf="email?.invalid && email?.touched" class="field__error">
+              <span *ngIf="email?.errors?.['required']">Email is required</span>
+              <span *ngIf="email?.errors?.['email']">Enter a valid email</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Phone</label>
+            <input type="tel" formControlName="phone" placeholder="9876543210" />
+            <div *ngIf="phone?.invalid && phone?.touched" class="field__error">
+              <span *ngIf="phone?.errors?.['pattern']">Enter a valid 10-digit Indian mobile number</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Shipping Address -->
+      <div class="form-section" formGroupName="address">
+        <h2 class="form-section__title">Shipping Address</h2>
+        <div class="field-grid">
+
+          <div class="field field-grid--full">
+            <label>Street</label>
+            <input type="text" formControlName="street" placeholder="123 MG Road" />
+          </div>
+
+          <div class="field">
+            <label>City</label>
+            <input type="text" formControlName="city" placeholder="Bengaluru" />
+          </div>
+
+          <div class="field">
+            <label>State</label>
+            <input type="text" formControlName="state" placeholder="Karnataka" />
+          </div>
+
+          <div class="field">
+            <label>Pincode</label>
+            <input type="text" formControlName="pincode" placeholder="560001" />
+            <div *ngIf="pincode?.invalid && pincode?.touched" class="field__error">
+              <span *ngIf="pincode?.errors?.['pattern']">Enter a valid 6-digit pincode</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Payment Method -->
+      <div class="form-section">
+        <h2 class="form-section__title">Payment Method</h2>
+        <div class="payment-options">
+          <label class="payment-option">
+            <input type="radio" formControlName="paymentMethod" value="COD" />
+            💵 Cash on Delivery
+          </label>
+          <label class="payment-option">
+            <input type="radio" formControlName="paymentMethod" value="UPI" />
+            📱 UPI
+          </label>
+          <label class="payment-option">
+            <input type="radio" formControlName="paymentMethod" value="CARD" />
+            💳 Credit / Debit Card
+          </label>
+        </div>
+      </div>
+
+      <!-- Form-level error -->
+      <div *ngIf="checkoutForm.errors?.['submitFailed']" class="form-error">
+        Order failed. Please try again.
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="checkoutForm.invalid">
+        Place Order
+      </button>
+
+    </form>
+  </div>
+</div>

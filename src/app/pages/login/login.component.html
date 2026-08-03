@@ -1,43 +1,52 @@
 <!-- login.component.html — FormsModule must be imported in the module -->
-<form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
-
-  <div class="field">
-    <label>Email</label>
-    <input
-      id="email"
-      name="email"
-      type="email"
-      [(ngModel)]="user.email"
-      required
-      email
-      #emailInput="ngModel"
-    />
-    <!-- Show errors only after field is touched -->
-    <div *ngIf="emailInput.invalid && emailInput.touched" class="error">
-      <span *ngIf="emailInput.errors?.['required']">Email is required</span>
-      <span *ngIf="emailInput.errors?.['email']">Enter a valid email</span>
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-card__header">
+      <h2>Welcome back</h2>
+      <p>Sign in with your FakeStore credentials</p>
     </div>
-  </div>
 
-  <div class="field">
-    <label>Password</label>
-    <input
-      name="password"
-      type="password"
-      [(ngModel)]="user.password"
-      required
-      minlength="8"
-      #passwordInput="ngModel"
-    />
-    <div *ngIf="passwordInput.invalid && passwordInput.touched" class="error">
-      <span *ngIf="passwordInput.errors?.['required']">Password is required</span>
-      <span *ngIf="passwordInput.errors?.['minlength']">Minimum 8 characters</span>
-    </div>
-  </div>
+    <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" class="login-form">
 
-  <div *ngIf="loginForm.errors?.['loginFailed']" class="error">
-    Invalid email or password
-  </div>
+      <div class="field">
+        <label for="username">Username</label>
+        <input
+          id="username"
+          name="username"
+          type="text"
+          [(ngModel)]="user.username"
+          required
+          minlength="2"
+          #usernameInput="ngModel"
+          placeholder="e.g. mor_2314"
+        />
+        <div *ngIf="usernameInput.invalid && usernameInput.touched" class="field__error">
+          <span *ngIf="usernameInput.errors?.['required']">Username is required</span>
+          <span *ngIf="usernameInput.errors?.['minlength']">Min 2 characters</span>
+        </div>
+      </div>
 
-  <button type="submit" [disabled]="loginForm.invalid">Login</button>
-</form>
+      <div class="field">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          [(ngModel)]="user.password"
+          required
+          #passwordInput="ngModel"
+          placeholder="Min. 8 characters"
+        />
+        <div *ngIf="passwordInput.invalid && passwordInput.touched" class="field__error">
+          <span *ngIf="passwordInput.errors?.['required']">Password is required</span>
+        </div>
+      </div>
+
+      <div *ngIf="loginForm.errors?.['loginFailed']" class="form-error">
+        Invalid email or password. Please try again.
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="loginForm.invalid">Login</button>
+    </form>
+  </div>
+</div>

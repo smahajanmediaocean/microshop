@@ -1,0 +1,11 @@
+<div class="success-page">
+  <div class="success-card">
+    <div class="success-card__icon">✅</div>
+    <h1>Order Placed!</h1>
+    <p class="success-card__sub">Thank you for your purchase.</p>
+    <p *ngIf="orderId" class="success-card__order-id">
+      Order ID: <strong>#{{ orderId }}</strong>
+    </p>
+    <button class="btn-primary" (click)="continueShopping()">Continue Shopping</button>
+  </div>
+</div>

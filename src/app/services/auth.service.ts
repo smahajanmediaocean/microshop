@@ -12,12 +12,12 @@ export class AuthService {
     @Inject(API_URL) private apiUrl: string
   ) {}
 
-  login(email: string, password: string): Observable<{ token: string }> {
+  login(username: string, password: string): Observable<{ token: string }> {
     return this.http.post<{ token: string }>(`${this.apiUrl}/auth/login`, {
-      username: email,
+      username,
       password
     }).pipe(
-      tap(res => localStorage.setItem('token', res.token))  // store token on success
+      tap(res => localStorage.setItem('token', res.token))
     );
   }
 
