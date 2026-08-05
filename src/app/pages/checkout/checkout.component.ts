@@ -1,6 +1,7 @@
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { CartService } from '../../services/cart.service';
 import { OrderService } from '../../services/order.service';
 import { UserProfile } from '../../models/user-profile';
@@ -22,7 +23,8 @@ export class CheckoutComponent implements OnInit, CanComponentDeactivate {
     private fb: FormBuilder,
     private cartService: CartService,
     private orderService: OrderService,
-    private router: Router
+    private router: Router,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
@@ -42,6 +44,10 @@ export class CheckoutComponent implements OnInit, CanComponentDeactivate {
 
       paymentMethod: ['COD', Validators.required],  // 'COD' | 'UPI' | 'CARD'
     });
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   // ── Getter shortcuts — cleaner than calling .get() every time in template ──

@@ -16,7 +16,6 @@ export class HomeComponent {
   filteredProducts$: Observable<Product[]>;
   productCategory$: Observable<string[]>;
   products$: Observable<Product[]>;
-  cartCount$: Observable<number>;
   searchTerm$ = new BehaviorSubject<string>('');
   selectedCategory$ = new BehaviorSubject<string>(ALL_CATEGORIES);
   selectedCategory = ALL_CATEGORIES;
@@ -25,10 +24,8 @@ constructor(
     private productService: ProductService,
     private cartService: CartService
   ) {
-    // Assign after injection — async pipe in template handles subscribe/unsubscribe
     this.products$ = this.productService.getAll();
     this.productCategory$ = this.products$.pipe(map(products => [...new Set(products.map(p => p.category))]));
-    this.cartCount$ = this.cartService.cartCount$;
     this.filteredProducts$ = combineLatest([
       this.products$,
       this.searchTerm$,

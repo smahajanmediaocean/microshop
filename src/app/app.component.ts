@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
 import { LoadingService } from './services/loading.service';
+import { CartService } from './services/cart.service';
 
 @Component({
   selector: 'app-root',
@@ -9,5 +11,12 @@ import { LoadingService } from './services/loading.service';
 })
 export class AppComponent {
   title = 'microshop';
-  constructor(public loadingService: LoadingService) {}
+  cartCount$: Observable<number>;
+
+  constructor(
+    public loadingService: LoadingService,
+    cartService: CartService
+  ) {
+    this.cartCount$ = cartService.cartCount$;
+  }
 }

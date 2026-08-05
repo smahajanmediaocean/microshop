@@ -1,4 +1,9 @@
 <div *ngIf="loadingService.isLoading$ | async" class="global-spinner">
   <div class="spinner"></div>
 </div>
-<router-outlet />
+
+<app-header [cartCount]="(cartCount$ | async) || 0"></app-header>
+<main>
+  <router-outlet />
+</main>
+<app-footer></app-footer>

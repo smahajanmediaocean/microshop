@@ -25,6 +25,20 @@
   }
 }
 
+.checkout-back {
+  display: inline-block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.2s;
+  &:hover { color: var(--accent); }
+}
+
 .checkout-form {
   display: flex;
   flex-direction: column;
