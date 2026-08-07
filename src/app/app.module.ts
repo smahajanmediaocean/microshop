@@ -1,24 +1,23 @@
 import { NgModule, InjectionToken } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './pages/home/home.component';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
-import { ProductCardComponent } from './components/product-card/product-card.component';
 import { CardComponent } from './components/card/card.component';
-import { DiscountPipe } from './pipes/discount.pipe';
 import { CartComponent } from './pages/cart/cart.component';
 import { ProductDetailComponent } from './pages/product-detail/product-detail.component';
+import { LoginComponent } from './pages/login/login.component';
+
 import { environment } from '../environments/environment';
 import { API_URL } from './tokens/api-url.token';
-import { LoginComponent } from './pages/login/login.component';
+import { CoreModule } from './core/core.module';
+import { SharedModule } from './shared/shared.module';
 import { CheckoutModule } from './pages/checkout/checkout.module';
-import { FormsModule } from '@angular/forms';
-import { AuthInterceptor } from './interceptors/auth.interceptor';
-import { LoadingInterceptor } from './interceptors/loading.interceptor';
+import { ProductsModule } from './features/products/products.module';
 
 
 @NgModule({
@@ -27,9 +26,7 @@ import { LoadingInterceptor } from './interceptors/loading.interceptor';
     HomeComponent,
     HeaderComponent,
     FooterComponent,
-    ProductCardComponent,
     CardComponent,
-    DiscountPipe,
     CartComponent,
     ProductDetailComponent,
     LoginComponent
@@ -38,13 +35,13 @@ import { LoadingInterceptor } from './interceptors/loading.interceptor';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule,
-    CheckoutModule
+    CoreModule,
+    SharedModule,
+    CheckoutModule,
+    ProductsModule
   ],
   providers: [
-    { provide: API_URL, useValue: environment.apiUrl },
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor,    multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true }
+    { provide: API_URL, useValue: environment.apiUrl }
   ],
   bootstrap: [AppComponent]
 })
