@@ -1,16 +1,20 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes, PreloadAllModules } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
-import { ProductDetailComponent } from './pages/product-detail/product-detail.component';
 import { CartComponent } from './pages/cart/cart.component';
-import { productResolver } from './resolvers/product.resolver';
 import { authGuard } from './guards/auth.guard';
 import { LoginComponent } from './pages/login/login.component';
+
 
 const routes: Routes = [
   { path: '',       redirectTo: '/home', pathMatch: 'full' },  // "/" → "/home"
   { path: 'home',   component: HomeComponent },                // "/home" → shows HomeComponent
-  { path: 'products/:id',  component: ProductDetailComponent , resolve: { product: productResolver }},
+  // { path: 'products/:id',  component: ProductDetailComponent , resolve: { product: productResolver }},
+  {
+    path: 'products',
+    loadChildren: () =>
+      import('./features/products/products.module').then(m => m.ProductsModule)
+  },
   { path: 'cart',          component: CartComponent },
   {
        path: 'checkout',
@@ -24,7 +28,8 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, {
-    scrollPositionRestoration: 'top'
+    scrollPositionRestoration: 'top',
+    // preloadingStrategy: PreloadAllModules
   })],
   exports: [RouterModule]
 })

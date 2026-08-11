@@ -25,4 +25,7 @@ export class CartComponent {
   remove(productId: number): void {
     this.cartService.removeItem(productId);
   }
+  trackByProductId(index: number, item: CartItem): number {
+    return item.product.id;
+  }
 }

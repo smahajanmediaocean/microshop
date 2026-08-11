@@ -89,9 +89,35 @@ const routes: Routes = [
 
 **Why it matters in MicroShop:** After the home page is stable, MicroShop can preload likely next routes such as products or cart.
 
-Angular can preload lazy routes in the background.
-`PreloadAllModules` is simple; custom strategies like Quicklink-style preloading can be smarter.
-                        
+Lazy loading splits bundles, but creates a small delay on the *first visit* to each route.
+Preloading eliminates that delay by downloading chunks silently in the background once the app is idle.
+
+```text
+Without preloading:  User clicks → Network request → Chunk downloads → Page renders  (noticeable lag)
+With preloading:     Chunk already downloaded → User clicks → Page renders instantly
+```
+
+---
+
+#### Strategy 1 — No Preloading (Default)
+
+```typescript
+RouterModule.forRoot(routes)
+// equivalent to:
+RouterModule.forRoot(routes, { preloadingStrategy: NoPreloading })
+```
+
+Angular downloads each lazy chunk **only when that route is visited**.
+
+| Use when |
+|---|
+| Routes are rarely navigated to |
+| Users are on mobile or metered connections |
+| The lazy chunk is very large and rarely needed |
+
+---
+
+#### Strategy 2 — `PreloadAllModules`
 
 ```typescript
 import { NgModule } from '@angular/core';
@@ -101,28 +127,176 @@ const routes: Routes = [
   { path: '', component: HomeComponent },
   {
     path: 'products',
-    loadChildren: [] => import['./features/products/products.module'].then[[m] => m.ProductsModule]
+    loadChildren: () => import('./features/products/products.module').then(m => m.ProductsModule)
+  },
+  {
+    path: 'cart',
+    loadChildren: () => import('./features/cart/cart.module').then(m => m.CartModule)
   }
 ];
 
-@NgModule[{
-  imports: [RouterModule.forRoot[routes, { preloadingStrategy: PreloadAllModules }]],
+@NgModule({
+  imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })],
   exports: [RouterModule]
-}]
+})
 export class AppRoutingModule {}
-                        
 ```
 
-| Strategy | Use when |
-|---|---|
-| No preloading | Bandwidth is precious or routes are rarely used |
-| `PreloadAllModules` | Simple apps with a few medium-sized lazy routes |
-| Custom / Quicklink style | You want intent-aware preloading |
+**How it works:**
+1. App bootstraps and renders the initial route
+2. Angular waits for the app to become idle
+3. It then fetches **every** lazy route chunk in the background, one by one
+
+| Use when |
+|---|
+| Small-to-medium number of lazy routes |
+| Chunks are reasonably sized (< 500 KB each) |
+| Users are likely to visit most routes in a session |
+
+**Drawback:** Downloads everything even if the user never visits those routes — wasteful on slow connections.
+
+---
+
+#### Strategy 3 — Custom Selective Preloading
+
+Only preload routes you explicitly flag with `data: { preload: true }`.
+
+```typescript
+import { Injectable } from '@angular/core';
+import { PreloadingStrategy, Route } from '@angular/router';
+import { Observable, of } from 'rxjs';
+
+@Injectable({ providedIn: 'root' })
+export class SelectivePreloadStrategy implements PreloadingStrategy {
+  preload(route: Route, load: () => Observable<any>): Observable<any> {
+    return route.data?.['preload'] ? load() : of(null);
+  }
+}
+```
+
+```typescript
+const routes: Routes = [
+  { path: '', component: HomeComponent },
+  {
+    path: 'products',
+    loadChildren: () => import('./features/products/products.module').then(m => m.ProductsModule),
+    data: { preload: true }   // ✅ will be preloaded in background
+  },
+  {
+    path: 'admin',
+    loadChildren: () => import('./features/admin/admin.module').then(m => m.AdminModule)
+    // no flag — downloaded only when the admin actually navigates here
+  }
+];
+
+RouterModule.forRoot(routes, { preloadingStrategy: SelectivePreloadStrategy })
+```
+
+| Use when |
+|---|
+| You know which routes are visited most often |
+| Some routes (admin, reports) should stay on-demand only |
+| You want fine-grained control without a third-party library |
+
+---
+
+#### Strategy 4 — Quicklink-style (Intent-aware)
+
+Preloads chunks for routes whose **links are currently visible in the viewport** — the smartest bandwidth-friendly approach.
+
+```bash
+npm install ngx-quicklink
+```
+
+```typescript
+import { QuicklinkModule, QuicklinkStrategy } from 'ngx-quicklink';
+
+@NgModule({
+  imports: [
+    QuicklinkModule,
+    RouterModule.forRoot(routes, { preloadingStrategy: QuicklinkStrategy })
+  ]
+})
+export class AppRoutingModule {}
+```
+
+**How it works under the hood:**
+- Uses the browser's `IntersectionObserver` API
+- Watches `<a routerLink="...">` elements on the page
+- When a link scrolls into view → preloads that route's chunk
+- Links scrolled out of view are deprioritised
+
+| Use when |
+|---|
+| Content-heavy pages with many visible nav links |
+| You want intent-driven preloading without manual flags |
+| Bandwidth conservation matters (mobile users) |
+
+---
+
+#### Strategy 5 — Network-aware Preloading (Advanced)
+
+Check the user's connection quality before deciding to preload at all.
+
+```typescript
+import { Injectable } from '@angular/core';
+import { PreloadingStrategy, Route } from '@angular/router';
+import { Observable, of } from 'rxjs';
+
+@Injectable({ providedIn: 'root' })
+export class NetworkAwarePreloadStrategy implements PreloadingStrategy {
+  preload(route: Route, load: () => Observable<any>): Observable<any> {
+    const conn = (navigator as any).connection;
+
+    // Skip preloading on slow or data-saver connections
+    if (conn && (conn.saveData || conn.effectiveType === '2g')) {
+      return of(null);
+    }
+
+    return route.data?.['preload'] ? load() : of(null);
+  }
+}
+```
+
+| Use when |
+|---|
+| Your users are primarily on mobile or variable connections |
+| You want to respect the OS-level Data Saver setting |
+| Combining with selective flagging for best control |
+
+---
+
+#### Strategy Comparison
+
+| Strategy | Downloads | Triggered | Best For |
+|---|---|---|---|
+| `NoPreloading` | On demand only | User navigates | Rarely-visited routes |
+| `PreloadAllModules` | Everything | After app idle | Small apps, fast connections |
+| Custom selective | Flagged routes only | After app idle | Medium apps, controlled preloading |
+| Quicklink | Visible links only | On scroll/render | Content-heavy apps |
+| Network-aware | Conditionally | After idle | Mobile / data-conscious apps |
+
+---
+
+**MicroShop recommended approach:**
+
+```typescript
+// Preload products & cart (common paths), skip admin & reports
+const routes: Routes = [
+  { path: 'products', loadChildren: ..., data: { preload: true } },
+  { path: 'cart',     loadChildren: ..., data: { preload: true } },
+  { path: 'admin',    loadChildren: ... },  // staff only — skip preload
+];
+
+RouterModule.forRoot(routes, { preloadingStrategy: SelectivePreloadStrategy })
+```
 
 **MicroShop decision notes:**
 - Preloading improves second-page navigation, not first paint.
-- Measure on realistic network conditions before turning everything on.
-- This is a pragmatic optimisation after route splitting exists.
+- Measure on realistic network conditions (Chrome DevTools → Network → Slow 4G) before enabling.
+- Start with `SelectivePreloadStrategy` and flag only the top 2–3 routes users hit most.
+- Quicklink is a drop-in upgrade if you later want fully intent-driven behaviour.
+- This is a pragmatic optimisation after route splitting already exists.
 
 ---
 
@@ -554,7 +728,8 @@ export const performanceChecklist = [
 ## 🏗️ Day 7 Hands-On
 
 - Convert products and checkout routes to lazy-loaded modules.
-- Enable `PreloadAllModules` and compare navigation feel.
+- Try `PreloadAllModules` first, then replace it with `SelectivePreloadStrategy` — flag only `/products` and `/cart`.
+- (Stretch) Install `ngx-quicklink` and swap to `QuicklinkStrategy`; observe which routes get preloaded based on visible links.
 - Run `ng build --configuration=production --stats-json` and inspect bundle sizes.
 - Add `trackBy` to every meaningful `*ngFor` in catalog, cart, and review templates.
 - Replace at least one repeated template method with a pure pipe or selector.

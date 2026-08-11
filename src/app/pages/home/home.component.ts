@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {Observable, combineLatest, BehaviorSubject, map} from 'rxjs';
+import {Observable, combineLatest, BehaviorSubject, map, shareReplay} from 'rxjs';
 import { Product } from '../../models/product';
 import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
@@ -24,7 +24,7 @@ constructor(
     private productService: ProductService,
     private cartService: CartService
   ) {
-    this.products$ = this.productService.getAll();
+    this.products$ = this.productService.getAll().pipe(shareReplay({ bufferSize: 1, refCount: true }));
     this.productCategory$ = this.products$.pipe(map(products => [...new Set(products.map(p => p.category))]));
     this.filteredProducts$ = combineLatest([
       this.products$,
@@ -52,5 +52,8 @@ constructor(
 
   onAddToCart(product: Product): void {
     this.cartService.addItem(product);
+  }
+  trackByProductId(index: number, product: Product): number {
+    return product.id;
   }
 }

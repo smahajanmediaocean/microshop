@@ -40,7 +40,7 @@
 
     <div *ngIf="filteredProducts$ | async as products; else loading" class="product-grid">
       <app-product-card
-        *ngFor="let product of products"
+        *ngFor="let product of products; trackBy: trackByProductId"
         [product]="product"
         (addToCart)="onAddToCart($event)">
       </app-product-card>
