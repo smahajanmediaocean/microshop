@@ -1,4 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { API_URL } from '../../tokens/api-url.token';
 
 import { CheckoutComponent } from './checkout.component';
 
@@ -8,7 +12,9 @@ describe('CheckoutComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CheckoutComponent]
+      imports: [ReactiveFormsModule, RouterTestingModule, HttpClientTestingModule],
+      declarations: [CheckoutComponent],
+      providers: [{ provide: API_URL, useValue: 'http://localhost:3000' }]
     })
     .compileComponents();
 

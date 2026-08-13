@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { ProductDetailComponent } from './product-detail.component';
 
@@ -8,7 +10,14 @@ describe('ProductDetailComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ProductDetailComponent]
+      imports: [HttpClientTestingModule],
+      declarations: [ProductDetailComponent],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { data: { product: null } } }
+        }
+      ]
     })
     .compileComponents();
 
