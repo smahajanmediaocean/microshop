@@ -1,5 +1,5 @@
 <!-- product-card.component.html -->
-<div class="card">
+<div class="card" data-testid="product-card">
   <div class="card__image-wrap" [routerLink]="['/products', product.id]" style="cursor:pointer">
     <img [src]="product.image" [alt]="product.title" class="card__image" />
     <span *ngIf="product.originalPrice" class="card__badge">
@@ -9,7 +9,7 @@
 
   <div class="card__body">
     <p class="card__category">{{ product.category | titlecase }}</p>
-    <h3 class="card__title">{{ product.title }}</h3>
+    <h3 class="card__title" data-testid="product-title">{{ product.title }}</h3>
 
     <div class="card__rating">
       <span class="card__stars">⭐ {{ product.rating.rate }}</span>
@@ -18,12 +18,12 @@
 
     <div class="card__footer">
       <div class="card__price">
-        <span class="card__price-current">{{ product.price | currency:'INR':'symbol':'1.0-0' }}</span>
+        <span class="card__price-current" data-testid="product-price">{{ product.price | currency:'INR':'symbol':'1.0-0' }}</span>
         <s *ngIf="product.originalPrice" class="card__price-original">
           {{ product.originalPrice | currency:'INR':'symbol':'1.0-0' }}
         </s>
       </div>
-      <button class="card__btn" (click)="onAddToCart()">Add to Cart</button>
+      <button class="card__btn" data-testid="add-to-cart" (click)="onAddToCart()">Add to Cart</button>
     </div>
   </div>
 </div>

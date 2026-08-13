@@ -16,15 +16,17 @@
         <span class="home__search-icon">🔍</span>
         <input
           class="home__search-input"
+          data-testid="search-input"
           type="text"
           placeholder="Search products..."
           (input)="onInputChange($event)"/>
       </div>
     </div>
 
-    <div class="home__chips">
+    <div class="home__chips" data-testid="category-filter">
       <button
         class="home__chip"
+        data-testid="category-chip"
         [class.home__chip--active]="selectedCategory === 'All'"
         (click)="onCategorySelect('All')">
         All
@@ -32,6 +34,7 @@
       <button
         *ngFor="let category of productCategory$ | async"
         class="home__chip"
+        data-testid="category-chip"
         [class.home__chip--active]="selectedCategory === category"
         (click)="onCategorySelect(category)">
         {{ category | titlecase }}

@@ -9,8 +9,8 @@
     <a routerLink="/orders"   routerLinkActive="active">Orders</a>
   </div>
 
-  <a routerLink="/cart" class="navbar__cart">
+  <a routerLink="/cart" class="navbar__cart" data-testid="cart-link">
     <span class="navbar__cart-icon">🛒</span>
-    <span class="navbar__cart-badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
+    <span class="navbar__cart-badge" data-testid="cart-badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
   </a>
 </nav>
